@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,10 +17,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private int currentCheckedItem;
 
-    ArrayAdapter<String> adapter;
-    ListView listView;
-    ArrayList<String> bag = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
+    private ListView listView;
+    private ArrayList<String> bag = new ArrayList<>();
 
     public ArrayAdapter getMyAdapter()
     {
@@ -33,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
         //Needed to get the toolbar to work on older versions
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (savedInstanceState != null)
+        {
+            ArrayList<String> _bag = savedInstanceState.getStringArrayList("shoppingBag");
+            if(_bag != null) {
+                bag = _bag;
+            }
+        }
 
         //getting our listiew - you can check the ID in the xml to see that it
         //is indeed specified as "list"
@@ -56,12 +66,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.deleteItemButton).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                deleteItemFromBag_onClick(v);
+            }
+        });
+
+        findViewById(R.id.deleteAllButton).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                 clearBag_onClick(v);
+            }
+        });
+
+        ((ListView)findViewById(R.id.list)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                currentCheckedItem = i;
+            }
+        });
 
         //add some stuff to the list so we have something
         // to show on app startup
-        bag.add("Bananas");
-        bag.add("Apples");
-
+        if(bag.isEmpty()) {
+            bag.add("1" + " " + "Bananas");
+            bag.add("1" + " " + "Apples");
+        }
     }
 
     @Override
@@ -85,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //ALWAYS CALL THE SUPER METHOD - To be nice!
+        super.onSaveInstanceState(outState);
+		/* Here we put code now to save the state */
+        outState.putStringArrayList("shoppingBag", bag);
+    }
+
+
     public void addToBag_onClick(View view) {
         EditText itemRef = findViewById(R.id.item);
         String item = itemRef.getText().toString();
@@ -95,11 +135,20 @@ public class MainActivity extends AppCompatActivity {
             if(!quantityText.isEmpty()) {
                 noOfItems = Integer.valueOf(quantityText);
             }
-            for(int i = 1; i <= noOfItems; i++) {
-                adapter.add(item);
-            }
+            adapter.add(noOfItems + " " + item);
+
+
             itemRef.getText().clear();
             quantityRef.getText().clear();
         }
+    }
+
+    public void deleteItemFromBag_onClick(View view) {
+        bag.remove(currentCheckedItem);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void clearBag_onClick(View view) {
+        adapter.clear();
     }
 }
