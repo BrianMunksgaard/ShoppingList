@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -51,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adapter.add("Milk");
-                Log.d("Bag","Items in back: "+bag.size());
+                addToBag_onClick(v);
             }
         });
+
 
         //add some stuff to the list so we have something
         // to show on app startup
@@ -82,5 +83,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addToBag_onClick(View view) {
+        EditText itemRef = findViewById(R.id.item);
+        String item = itemRef.getText().toString();
+        if(!item.isEmpty()) {
+            EditText quantityRef = findViewById(R.id.itemQuantity);
+            String quantityText = quantityRef.getText().toString();
+            int noOfItems = 1;
+            if(!quantityText.isEmpty()) {
+                noOfItems = Integer.valueOf(quantityText);
+            }
+            for(int i = 1; i <= noOfItems; i++) {
+                adapter.add(item);
+            }
+            itemRef.getText().clear();
+            quantityRef.getText().clear();
+        }
     }
 }
