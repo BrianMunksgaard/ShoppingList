@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_clearAll"
-        android:icon="@drawable/ic_clear_black_24dp"
+        android:icon="@drawable/ic_clear_white_24dp"
         android:orderInCategory="1"
         android:title="@string/delete_all_from_bag_toolbar"
         app:showAsAction="always" />
