@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="autofill"
+        android:defaultValue="true"
+        android:summary="This is a summary"
+        android:title="Fill on startup" />
+
+</PreferenceScreen>

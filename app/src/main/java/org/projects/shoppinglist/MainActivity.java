@@ -1,5 +1,6 @@
 package org.projects.shoppinglist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,10 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final int RESULT_CODE_PREFERENCES = 1;
 
     private int currentCheckedItem;
 
@@ -89,7 +93,9 @@ public class MainActivity extends AppCompatActivity {
 
         //add some stuff to the list so we have something
         // to show on app startup
-        if(bag.isEmpty()) {
+        boolean autofill = ShoppingAppSettingsFragment.shouldAutoFill(this);
+
+        if(bag.isEmpty() && autofill) {
             bag.add("1" + " " + "Bananas");
             bag.add("1" + " " + "Apples");
         }
@@ -109,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
+                Intent intent = new Intent(this,SettingsActivity.class);
+                startActivityForResult(intent, RESULT_CODE_PREFERENCES);
                 break;
             case R.id.action_clearAll:
                 adapter.clear();
@@ -125,6 +133,18 @@ public class MainActivity extends AppCompatActivity {
         outState.putStringArrayList("shoppingBag", bag);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode==RESULT_CODE_PREFERENCES) //the code means we came back from settings
+        {
+            //I can can these methods like this, because they are static
+            boolean autoFill = ShoppingAppSettingsFragment.shouldAutoFill(this);
+            String message = "Should we autofill: " + autoFill;
+            Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+            toast.show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     public void addToBag_onClick(View view) {
         EditText itemRef = findViewById(R.id.item);
