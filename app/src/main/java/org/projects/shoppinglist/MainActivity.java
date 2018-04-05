@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.projects.shoppinglist.domain.Product;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentCheckedItem;
 
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<Product> adapter;
     private ListView listView;
-    private ArrayList<String> bag = new ArrayList<>();
+    private ArrayList<Product> bag = new ArrayList<>();
 
     public ArrayAdapter getMyAdapter()
     {
@@ -36,13 +38,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //Needed to get the toolbar to work on older versions
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (savedInstanceState != null)
         {
-            ArrayList<String> _bag = savedInstanceState.getStringArrayList("shoppingBag");
+            ArrayList<Product> _bag = savedInstanceState.getParcelableArrayList("shoppingBag");
             if(_bag != null) {
                 bag = _bag;
             }
@@ -96,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
         boolean autofill = ShoppingAppSettingsFragment.shouldAutoFill(this);
 
         if(bag.isEmpty() && autofill) {
-            bag.add("1" + " " + "Bananas");
-            bag.add("1" + " " + "Apples");
+            bag.add(new Product("Bananas", 1));
+            bag.add(new Product("Apples", 1));
         }
     }
 
@@ -129,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         //ALWAYS CALL THE SUPER METHOD - To be nice!
         super.onSaveInstanceState(outState);
+
 		/* Here we put code now to save the state */
-        outState.putStringArrayList("shoppingBag", bag);
+        outState.putParcelableArrayList("shoppingBag", bag);
     }
 
     @Override
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             if(!quantityText.isEmpty()) {
                 noOfItems = Integer.valueOf(quantityText);
             }
-            adapter.add(noOfItems + " " + item);
+            adapter.add(new Product(item, noOfItems));
 
 
             itemRef.getText().clear();
