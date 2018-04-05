@@ -16,10 +16,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.projects.shoppinglist.domain.Product;
+import org.projects.shoppinglist.fragment.MyDialogFragment;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MyDialogFragment.OnPositiveListener {
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
@@ -175,5 +176,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearBag_onClick(View view) {
         adapter.clear();
+    }
+
+    @Override
+    public void onPositiveClicked() {
+
     }
 }

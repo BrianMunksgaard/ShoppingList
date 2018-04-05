@@ -6,4 +6,8 @@
     <string name="delete_from_bag">Delete Item</string>
     <string name="delete_all_from_bag">Clear Bag</string>
     <string name="delete_all_from_bag_toolbar">Clear Bag</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="areYouSure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
