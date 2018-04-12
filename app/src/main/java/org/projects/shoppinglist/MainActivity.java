@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +15,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.projects.shoppinglist.domain.Product;
-import org.projects.shoppinglist.fragment.MyDialogFragment;
+import org.projects.shoppinglist.fragment.YNDialog;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MyDialogFragment.OnPositiveListener {
+public class MainActivity extends AppCompatActivity implements YNDialog.OnPositiveListener {
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
@@ -175,6 +174,20 @@ public class MainActivity extends AppCompatActivity implements MyDialogFragment.
     }
 
     public void clearBag_onClick(View view) {
+        YNDialog dialog = new YNDialog();
+
+        dialog.
+        dialog.OnPositiveListener = new YNDialog.OnPositiveListener() {
+            @Override
+            public void onPositiveClicked() {
+                adapter.clear();
+            }
+        };
+
+        //Here we show the dialog
+        //The tag "MyFragement" is not important for us.
+        dialog.show(getFragmentManager(), "YNFragment");
+
         adapter.clear();
     }
 
