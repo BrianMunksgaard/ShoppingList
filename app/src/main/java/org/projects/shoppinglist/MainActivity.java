@@ -1,5 +1,6 @@
 package org.projects.shoppinglist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,9 @@ import org.projects.shoppinglist.fragment.YNDialog;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements YNDialog.OnPositiveListener {
+public class MainActivity extends AppCompatActivity implements YNDialog.OnPositiveListener, YNDialog.OnNegativeListener {
+
+    Context context;
 
     private final int RESULT_CODE_PREFERENCES = 1;
 
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
         setContentView(R.layout.activity_main);
 
         //Needed to get the toolbar to work on older versions
@@ -176,14 +180,6 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     public void clearBag_onClick(View view) {
         YNDialog dialog = new YNDialog();
 
-        dialog.
-        dialog.OnPositiveListener = new YNDialog.OnPositiveListener() {
-            @Override
-            public void onPositiveClicked() {
-                adapter.clear();
-            }
-        };
-
         //Here we show the dialog
         //The tag "MyFragement" is not important for us.
         dialog.show(getFragmentManager(), "YNFragment");
@@ -192,7 +188,19 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     }
 
     @Override
-    public void onPositiveClicked() {
+    public void onNegativeClicked() {
 
+    }
+
+    @Override
+    public void onPositiveClicked() {
+        //Do your update stuff here to the listview
+        //and the bag etc
+        //just to show how to get arguments from the bag.
+        Toast toast = Toast.makeText(context,
+                "positive button clicked", Toast.LENGTH_LONG);
+        toast.show();
+        bag.clear(); //here you can do stuff with the bag and
+        //adapter etc.
     }
 }

@@ -119,13 +119,6 @@ public class YNDialog extends DialogFragment {
         }
     };
 
-    DialogInterface.OnCancelListener cListener = new DialogInterface.OnCancelListener() {
-        @Override
-        public void onCancel(DialogInterface dialogInterface) {
-            cancelClick();
-        }
-    }
-
     /**
      * Calls the positive (yes) click handler in the activity using
      * this dialog.
