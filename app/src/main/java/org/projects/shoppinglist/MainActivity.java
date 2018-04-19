@@ -3,11 +3,13 @@ package org.projects.shoppinglist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,9 +35,19 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     private ListView listView;
     private ArrayList<Product> bag = new ArrayList<>();
 
+    /*
+     * A flag used to indicate whether or not the bag should really be cleared.
+     */
+    private boolean reallyClearBag = true;
 
+    /*
+     * For the quantity spinner.
+     */
     private String[] spinnerItems = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
+    /**
+     * @return The adapter used for the product list (shopping bag).
+     */
     public ArrayAdapter getMyAdapter()
     {
         return adapter;
@@ -201,12 +213,42 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     }
 
     public void clearBag_onClick(View view) {
-        YNDialog dialog = new YNDialog();
 
-        //Here we show the dialog
-        //The tag "MyFragement" is not important for us.
-        dialog.show(getFragmentManager(), "YNFragment");
 
+        // Use dialog to confirm clear bag.
+        // YNDialog dialog = new YNDialog();
+        // dialog.show(getFragmentManager(), "YNFragment");
+
+
+        // Hide the keyboard.
+        final View parent = findViewById(R.id.layout);
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(parent.getWindowToken(), 0);
+
+        // Use snackbar to confirm deletion.
+        reallyClearBag = true;
+        Snackbar snackbar = Snackbar
+                .make(parent, "Really clear the bag!", Snackbar.LENGTH_LONG)
+                .setAction("CANCEL", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        reallyClearBag = false;
+                        Snackbar snackbar = Snackbar.make(parent, "Cancelled clear bag!", Snackbar.LENGTH_SHORT);
+                        snackbar.show();
+
+                    }
+
+                });
+
+        snackbar.addCallback(new Snackbar.Callback() {
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                if (reallyClearBag) adapter.clear();
+            }
+
+        });
+        snackbar.show();
 
     }
 
