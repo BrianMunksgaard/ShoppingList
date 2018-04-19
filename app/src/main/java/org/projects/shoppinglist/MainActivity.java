@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         //The tag "MyFragement" is not important for us.
         dialog.show(getFragmentManager(), "YNFragment");
 
-        adapter.clear();
+
     }
 
     @Override
@@ -194,13 +194,19 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
 
     @Override
     public void onPositiveClicked() {
+
+        // Clear the bag.
+        adapter.clear();
+
         //Do your update stuff here to the listview
         //and the bag etc
         //just to show how to get arguments from the bag.
+        /*
         Toast toast = Toast.makeText(context,
                 "positive button clicked", Toast.LENGTH_LONG);
         toast.show();
         bag.clear(); //here you can do stuff with the bag and
+        */
         //adapter etc.
     }
 }
