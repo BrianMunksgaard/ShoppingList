@@ -157,6 +157,18 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
                 Intent intent = new Intent(this,SettingsActivity.class);
                 startActivityForResult(intent, RESULT_CODE_PREFERENCES);
                 break;
+
+            case R.id.share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain"); //MIME type
+                String textToShare = "";
+                for(Product p : bag) {
+                    textToShare += p.toString() + "\n";
+                }
+
+                shareIntent.putExtra(Intent.EXTRA_TEXT, textToShare);
+                startActivity(shareIntent);
+                break;
             case R.id.action_clearAll:
                 adapter.clear();
                 break;
