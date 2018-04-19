@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.projects.shoppinglist.domain.Product;
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     private ArrayAdapter<Product> adapter;
     private ListView listView;
     private ArrayList<Product> bag = new ArrayList<>();
+
+
+    private String[] spinnerItems = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
     public ArrayAdapter getMyAdapter()
     {
@@ -98,6 +102,13 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
             }
         });
 
+        // Put number in the quantity spinner.
+        Spinner spinnerQuantity = findViewById(R.id.spinnerQuantity);
+        ArrayAdapter<String> spinnerQuantityAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item, spinnerItems);
+        spinnerQuantity.setAdapter(spinnerQuantityAdapter);
+
+
         //add some stuff to the list so we have something
         // to show on app startup
         boolean autofill = ShoppingAppSettingsFragment.shouldAutoFill(this);
@@ -155,20 +166,32 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     }
 
     public void addToBag_onClick(View view) {
+
+        // Get product item.
         EditText itemRef = findViewById(R.id.item);
-        String item = itemRef.getText().toString();
-        if(!item.isEmpty()) {
+        String itemText = itemRef.getText().toString();
+
+        // Only retrieve quantity if there is
+        // an item.
+        if(!itemText.isEmpty()) {
+
+            // Get quantity from spinner.
+            Spinner spinnerQuantity = findViewById(R.id.spinnerQuantity);
+            int quantityFromSpinner = spinnerQuantity.getSelectedItemPosition() + 1;
+
+            // Get quantity from edit text.
             EditText quantityRef = findViewById(R.id.itemQuantity);
             String quantityText = quantityRef.getText().toString();
-            int noOfItems = 1;
+
+            int noOfItems = quantityFromSpinner;
             if(!quantityText.isEmpty()) {
                 noOfItems = Integer.valueOf(quantityText);
             }
-            adapter.add(new Product(item, noOfItems));
 
-
+            adapter.add(new Product(itemText, noOfItems));
             itemRef.getText().clear();
             quantityRef.getText().clear();
+            spinnerQuantity.setSelection(0);
         }
     }
 
