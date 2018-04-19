@@ -25,10 +25,19 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements YNDialog.OnPositiveListener, YNDialog.OnNegativeListener {
 
-    Context context;
+    /*
+     * The current context (this).
+     */
+    private Context context;
 
+    /*
+     * Return code from preferences.
+     */
     private final int RESULT_CODE_PREFERENCES = 1;
 
+    /*
+     * The number of the currently checked item.
+     */
     private int currentCheckedItem;
 
     private ArrayAdapter<Product> adapter;
@@ -36,9 +45,9 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     private ArrayList<Product> bag = new ArrayList<>();
 
     /*
-     * A flag used to indicate whether or not the bag should really be cleared.
+     * A flag used to indicate whether or an item should really be removed from the bag.
      */
-    private boolean reallyClearBag = true;
+    private boolean reallyRemoveItem = true;
 
     /*
      * For the quantity spinner.
@@ -166,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode==RESULT_CODE_PREFERENCES) //the code means we came back from settings
+        if (requestCode == RESULT_CODE_PREFERENCES) //the code means we came back from settings
         {
             //I can can these methods like this, because they are static
             boolean autoFill = ShoppingAppSettingsFragment.shouldAutoFill(this);
@@ -208,17 +217,8 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     }
 
     public void deleteItemFromBag_onClick(View view) {
-        bag.remove(currentCheckedItem);
-        adapter.notifyDataSetChanged();
-    }
 
-    public void clearBag_onClick(View view) {
-
-
-        // Use dialog to confirm clear bag.
-        // YNDialog dialog = new YNDialog();
-        // dialog.show(getFragmentManager(), "YNFragment");
-
+        final String productName = bag.get(currentCheckedItem).getName();
 
         // Hide the keyboard.
         final View parent = findViewById(R.id.layout);
@@ -226,30 +226,37 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         imm.hideSoftInputFromWindow(parent.getWindowToken(), 0);
 
         // Use snackbar to confirm deletion.
-        reallyClearBag = true;
+        reallyRemoveItem = true;
         Snackbar snackbar = Snackbar
-                .make(parent, "Really clear the bag!", Snackbar.LENGTH_LONG)
-                .setAction("CANCEL", new View.OnClickListener() {
+                .make(parent, "Really remove " + productName + "!", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        reallyClearBag = false;
-                        Snackbar snackbar = Snackbar.make(parent, "Cancelled clear bag!", Snackbar.LENGTH_SHORT);
+                        reallyRemoveItem = false;
+                        Snackbar snackbar = Snackbar.make(parent, "Remove of " + productName + " cancelled!", Snackbar.LENGTH_SHORT);
                         snackbar.show();
-
                     }
-
                 });
 
         snackbar.addCallback(new Snackbar.Callback() {
 
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
-                if (reallyClearBag) adapter.clear();
+                if (reallyRemoveItem) {
+                    bag.remove(currentCheckedItem);
+                    adapter.notifyDataSetChanged();
+                }
             }
 
         });
         snackbar.show();
+    }
 
+    public void clearBag_onClick(View view) {
+
+        // Use dialog to confirm clear bag.
+        YNDialog dialog = new YNDialog();
+        dialog.show(getFragmentManager(), "YNFragment");
     }
 
     @Override

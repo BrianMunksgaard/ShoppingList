@@ -34,6 +34,13 @@ public class Product implements Parcelable {
     }
 
     /**
+     * @return The product name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * This implementation returns both product name and quantity.
      */
     @Override
