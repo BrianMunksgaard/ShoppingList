@@ -51,7 +51,7 @@ public class Product implements Parcelable {
     /**
      * @return The product quantity.
      */
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity​;
     }
 

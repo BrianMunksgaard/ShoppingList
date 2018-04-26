@@ -16,7 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import org.projects.shoppinglist.domain.Product;
 import org.projects.shoppinglist.fragment.YNDialog;
@@ -40,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
      */
     private int currentCheckedItem;
 
-    private ArrayAdapter<Product> adapter;
+    //private ArrayAdapter<Product> adapter;
+    private FirebaseListAdapter<Product> adapter;
     private ListView listView;
     private ArrayList<Product> bag = new ArrayList<>();
 
@@ -54,10 +62,13 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
      */
     private String[] spinnerItems = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
+    private DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference mShoppingBagRef = mRootRef.child("bag");
+
     /**
      * @return The adapter used for the product list (shopping bag).
      */
-    public ArrayAdapter getMyAdapter()
+    public FirebaseListAdapter<Product> getMyAdapter()
     {
         return adapter;
     }
@@ -67,6 +78,23 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.activity_main);
+
+        Query query = mRootRef.child("bag");
+
+        FirebaseListOptions<Product> options = new FirebaseListOptions.Builder<Product>()
+                .setQuery( query , Product. class )
+                .setLayout(android.R.layout. simple_list_item_checked )
+                .build();
+
+        adapter = new FirebaseListAdapter<Product>(options) {
+            @Override
+            protected void populateView(View v, Product product, int position) {
+                TextView textView = (TextView) v.findViewById( android.R.id . text1 );
+                textView.setTextSize( 24 ); //modify this if you want different size
+                textView.setText(product.toString());
+            }
+        };
+
 
         //Needed to get the toolbar to work on older versions
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -85,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         listView = findViewById(R.id.list);
         //here we create a new adapter linking the bag and the
         //listview
-        adapter =  new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_checked,bag );
+        //adapter =  new ArrayAdapter<>(this,
+        //        android.R.layout.simple_list_item_checked,bag );
 
         //setting the adapter on the listview
         listView.setAdapter(adapter);
@@ -140,6 +168,16 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         }
     }
 
+    @Override protected void onStart() {
+        super .onStart();
+        adapter.startListening();
+    }
+
+    @Override protected void onStop() {
+        super .onStop();
+        adapter.stopListening();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -170,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
                 startActivity(shareIntent);
                 break;
             case R.id.action_clearAll:
-                adapter.clear();
+                //adapter.clear();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -221,7 +259,8 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
                 noOfItems = Integer.valueOf(quantityText);
             }
 
-            adapter.add(new Product(itemText, noOfItems));
+            //adapter.add(new Product(itemText, noOfItems));
+            mShoppingBagRef.push().setValue(new Product(itemText, noOfItems));
             itemRef.getText().clear();
             quantityRef.getText().clear();
             spinnerQuantity.setSelection(0);
@@ -255,8 +294,14 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 if (reallyRemoveItem) {
+                    adapter.getRef(currentCheckedItem).setValue(null);
+
+                    /*
+                    int index = listView .getCheckedItemPosition();
+                    getMyAdapter().getRef(index).setValue( null );
                     bag.remove(currentCheckedItem);
                     adapter.notifyDataSetChanged();
+                    */
                 }
             }
 
@@ -271,6 +316,15 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
         dialog.show(getFragmentManager(), "YNFragment");
     }
 
+    /**
+     *
+     * @param index
+     * @return
+     */
+    public Product getProduct(int index) {
+        return getMyAdapter().getItem(index);
+    }
+
     @Override
     public void onNegativeClicked() {
 
@@ -280,8 +334,10 @@ public class MainActivity extends AppCompatActivity implements YNDialog.OnPositi
     public void onPositiveClicked() {
 
         // Clear the bag.
-        adapter.clear();
+        //adapter.clear();
 
+        mShoppingBagRef.removeValue();
+        adapter.notifyDataSetChanged();
         //Do your update stuff here to the listview
         //and the bag etc
         //just to show how to get arguments from the bag.
