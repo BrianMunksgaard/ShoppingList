@@ -41,6 +41,29 @@ public class Product implements Parcelable {
     }
 
     /**
+     * Sets the product name.
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return The product quantity.
+     */
+    public String getQuantity() {
+        return quantity​;
+    }
+
+    /**
+     * Sets the quantity.
+     * @param quantity​
+     */
+    public void setQuantity​(int quantity​) {
+        this.quantity​ = quantity​;
+    }
+
+    /**
      * This implementation returns both product name and quantity.
      */
     @Override
